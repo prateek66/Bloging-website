@@ -9,10 +9,10 @@ const Post = require('../schema/blogs')
 exports.getAllPosts = (req, res, next) => {
   let pageNumber = parseInt(req.query.pageNumber);
   let pageSize = parseInt(req.query.pageSize);
-  var query = Post.find().skip((pageNumber - 1) * pageSize).limit(pageSize);
+  var query = Post.find().skip((pageNumber - 1) * pageSize).limit(pageSize).sort({timestamp:'desc'});
   query.exec()
     .then((posts) => {
-      res.status(200).json({ posts : posts.reverse() });
+      res.status(200).json({ posts : posts});
 
     })
     .catch((err) => {
