@@ -12,7 +12,7 @@ exports.getAllPosts = (req, res, next) => {
   var query = Post.find().skip((pageNumber - 1) * pageSize).limit(pageSize);
   query.exec()
     .then((posts) => {
-      res.status(200).json({ posts });
+      res.status(200).json({ posts : posts.reverse() });
 
     })
     .catch((err) => {

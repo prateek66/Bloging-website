@@ -38,6 +38,7 @@ categoriesRouter.post('/create_category_document', (req, res, next) => {
         });
 
         try {
+            //check code>>>>
             const saveToDb = await newDocument.save();
             return res.status(200).send({ success: true, status: 'categories document created successfully',saveToDb});
         }
@@ -96,9 +97,9 @@ categoriesRouter.put('/add_category', (req, res, next) => {
 
 //api to delete a category
 
-categoriesRouter.delete('/delete_category/:id', async(req,res) => {
+categoriesRouter.delete('/delete_category/:title', async(req,res) => {
 
-    const _id = req.params.id
+    const title = req.params.title
    async function deleteCategory(){
        //const deleteCat = await categoriesSchema.findByIdAndDelete(_id)
     //    if(!deleteCat){
@@ -106,16 +107,23 @@ categoriesRouter.delete('/delete_category/:id', async(req,res) => {
 
     //    }
        try{
-           const check = await blogSchema.find({category:_id})
+
+          
+           const check = await blogSchema.find({category:title})
            console.log(check)
            if(check.length===0){
-            const deleteCat = await categoriesSchema.findByIdAndDelete(_id)
-           res.status(201).send(deleteCat)
+
+            const deleteCat = await categoriesSchema.find({})
+            console.log( 'test....' , deleteCat);
+
+            let newCategory = deleteCat[0].data.filter(x=> x !== title)
+             await categoriesSchema.findByIdAndUpdate(deleteCat[0]._id ,{data:newCategory} ,{new:true})
+           res.status(201).send({success: true, status:'category deleted'},newCategory)
            }else{
-           res.send('some blogs are there ')
+           return res.send({success:false,status:'blogs are there in this category'})
            }
        }catch(e){
-           res.send(e)
+           res.send({success:false,status:'something went wrong'});
        }
 
     }
