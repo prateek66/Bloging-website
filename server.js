@@ -8,7 +8,7 @@ var url = require('url')
 app.post('/json' , async(req,res) => {
     const item = await blog.blog()
     //res.send(item)
-   const link = 'https://urbanasian.com/author/missroshni07/feed/'
+   const link = 'https://medium.com/andwemet/embracing-each-others-perspective-7b588fedcc5c'
    const path = url.parse(link,true)
    console.log(path)
     const filterBlog = item.filter((e,i) => {
@@ -17,7 +17,7 @@ app.post('/json' , async(req,res) => {
         var q = url.parse(adr, true)
         console.log(q.pathname)
         if(q.pathname === path.pathname){
-            res.send(e)
+            res.send({...e,categories:null})
         }
     
     })

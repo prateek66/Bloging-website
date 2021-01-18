@@ -10,7 +10,9 @@ FeaturedBlogsRouter.get('/featured_blogs', (req, res, next) => {
 
     async function getFeaturedBlogs() {
         try {
+
             let featuredBlogs = await featuredBlogsSchema.find({});
+           
             if (featuredBlogs) {
                 console.log({ success: true, groups: featuredBlogs })
                 return res.status(200).send({ success: true, blogs: featuredBlogs[0].blogs });
@@ -79,8 +81,12 @@ FeaturedBlogsRouter.post('/add_blog', (req, res, next) => {
                     return res.status(200).send({ success: false, status: 'This blog is already added to featured blogs !' });
                 }
 
-                hold.push({_id:_id, thumbnail:thumbnail,title:title});
-                //console.log(hold);
+                    if(hold.length >=3){
+                        hold.unshift({_id:newPost._id, thumbnail:thumbnail,title:title});
+                        hold.pop();
+                    } else  hold.unshift({_id:newPost._id, thumbnail:thumbnail,title:title});
+
+             
                 let updateToDb = await featuredBlogsSchema.findByIdAndUpdate(fetchFeaturedBlogs[0]._id, { blogs: hold });
                 let updateBlog = await blogsSchema.findByIdAndUpdate(_id, {isFeatured:true})
                 return res.status(200).send({ success: true, status: 'Added to featured blogs successfully' });

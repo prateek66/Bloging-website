@@ -2,6 +2,7 @@ const { json } = require('body-parser');
 const { db } = require('../schema/blogs');
 const blogs = require('../schema/blogs');
 const Post = require('../schema/blogs')
+const featuredBlogsSchema = require('../schema/featuredBlogs')
 //const category = require('../schema/category')
 
 
@@ -43,7 +44,8 @@ exports.getPostById = (req, res, next) => {
 }
 
 // create post
-exports.createPost = (req, res, next) => {
+exports.createPost = async (req, res, next) => {
+
   const title = req.body.title;
   const content = req.body.content;
   const author = req.body.author;
@@ -51,6 +53,7 @@ exports.createPost = (req, res, next) => {
   const thumbnail = req.body.thumbnail;
   const description = req.body.description;
 
+  
 
   if (!title || !content || !author || !description || !thumbnail) {
     res.status(500).json({ error: 'All Fields Are Required.' });
@@ -65,13 +68,39 @@ exports.createPost = (req, res, next) => {
     thumbnail
   });
 
-  post.save()
-    .then((post) => {
-      return res.status(201).json({ post });
-    })
-    .catch((err) => {
-      return res.status(500).json({ err });
-    })
+     const newPost = await post.save()
+     if(!post){
+       return res.status(200).json({message : 'can not create post'})
+     }
+
+     if(req.body.isFeatured){
+      let fetchFeaturedBlogs = await featuredBlogsSchema.find({});
+      if (fetchFeaturedBlogs) {
+          //console.log({success:true, groups:fetchFeaturedBlogs})
+          let hold = fetchFeaturedBlogs[0].blogs;
+
+          //check for dublicate entry
+     const newPost = await post.save()
+     if (hold.find((item) => item._id === newPost._id)) {
+              return res.status(200).send({ success: false, status: 'This blog is already added to featured blogs !' });
+          }
+
+          if(hold.length >=3){
+            hold.unshift({_id:newPost._id, thumbnail:thumbnail,title:title});
+            hold.pop();
+        } else  hold.unshift({_id:newPost._id, thumbnail:thumbnail,title:title}); // 
+          //console.log(hold);
+          let updateToDb = await featuredBlogsSchema.findByIdAndUpdate(fetchFeaturedBlogs[0]._id, { blogs: hold });
+          let updateBlog = await Post.findByIdAndUpdate(newPost._id, {isFeatured:true},{new:true})
+          return res.status(200).json({message : updateBlog})
+
+    
+     }
+     
+     } 
+     return res.status(200).json({message : newPost})
+
+  
 }
 
 

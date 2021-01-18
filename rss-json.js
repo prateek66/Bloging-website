@@ -14,6 +14,7 @@ exports.blog = async ()=> {
     // Clean up the string and replace reserved characters
     const fileName = `${feed.title.replace(/\s+/g, "-").replace(/[/\\?%*:|"<>]/g, '').toLowerCase()}.json`;
 
+    console.log(fileName);
     if (fs.existsSync(fileName)) {
         items = require(`./${fileName}`);
     }
