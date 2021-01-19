@@ -23,7 +23,7 @@ mongoose.connect( `${process.env.MONGO_URI}`, {useNewUrlParser: true,  useUnifie
 
 // express middleware
 //app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json({limit: '10000kb'}));
+app.use(bodyParser.json({limit: '15000kb'}));
 let server;
 if (process.env.NODE_ENV !== config.test_env) {
   server = app.listen(config.port);
