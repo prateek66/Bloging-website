@@ -13,7 +13,7 @@ categoriesRouter.get('/all_categories', (req, res, next) => {
             let fetchCategories = await categoriesSchema.find({});
             if (fetchCategories) {
                 console.log({ success: true, groups: fetchCategories })
-                return res.status(200).send({ success: true, fetchCategories});  //categories: fetchCategories[0].data
+                return res.status(200).send({ success: true, fetchCategories });  //categories: fetchCategories[0].data
             } else {
                 return res.status(200).send({ success: false, status: 'categories not found' })
             }
@@ -40,7 +40,7 @@ categoriesRouter.post('/create_category_document', (req, res, next) => {
         try {
             //check code>>>>
             const saveToDb = await newDocument.save();
-            return res.status(200).send({ success: true, status: 'categories document created successfully',saveToDb});
+            return res.status(200).send({ success: true, status: 'categories document created successfully', saveToDb });
         }
         catch (err) {
             console.log(err);
@@ -77,9 +77,9 @@ categoriesRouter.put('/add_category', (req, res, next) => {
                 hold.push(req.body.category);
                 console.log(req.body.category);
                 console.log(hold)
-                let updateToDb = await categoriesSchema.findByIdAndUpdate(fetchCategories[0]._id, { data: hold },{new: true});
+                let updateToDb = await categoriesSchema.findByIdAndUpdate(fetchCategories[0]._id, { data: hold }, { new: true });
                 //console.log()
-                return res.status(200).send({ success: true, status: 'category added successfully', categories:updateToDb.data });
+                return res.status(200).send({ success: true, status: 'category added successfully', categories: updateToDb.data });
             } else {
                 return res.status(200).send({ success: false, status: 'category not added' })
             }
@@ -97,34 +97,26 @@ categoriesRouter.put('/add_category', (req, res, next) => {
 
 //api to delete a category
 
-categoriesRouter.delete('/delete_category/:title', async(req,res) => {
+categoriesRouter.delete('/delete_category', async (req, res) => {
 
-    const title = req.params.title
-   async function deleteCategory(){
-       //const deleteCat = await categoriesSchema.findByIdAndDelete(_id)
-    //    if(!deleteCat){
-    //        res.status(404).send("error")
-
-    //    }
-       try{
-
-          
-           const check = await blogSchema.find({category:title})
-           console.log(check)
-           if(check.length===0){
-
-            const deleteCat = await categoriesSchema.find({})
-            console.log( 'test....' , deleteCat);
-
-            let newCategory = deleteCat[0].data.filter(x=> x !== title)
-             await categoriesSchema.findByIdAndUpdate(deleteCat[0]._id ,{data:newCategory} ,{new:true})
-           res.status(201).send({success: true, status:'category deleted'},newCategory)
-           }else{
-           return res.send({success:false,status:'blogs are there in this category'})
-           }
-       }catch(e){
-           res.send({success:false,status:'something went wrong'});
-       }
+    const title = req.body.category
+    async function deleteCategory() {
+        try {
+            const check = await blogSchema.find({ category: title })
+            console.log(check)
+            if (check.length === 0) {
+                const deleteCat = await categoriesSchema.find({})
+                console.log('test....', deleteCat);
+                let newCategory = deleteCat[0].data.filter(x => x !== title)
+                let updateToDb = await categoriesSchema.findByIdAndUpdate(deleteCat[0]._id, { data: newCategory }, { new: true })
+                return res.status(200).send({ success: true, status: 'category deleted',categories: updateToDb.data})
+            } else {
+                return res.status(200).send({ success: false, status: 'blogs are there in this category' })
+            }
+        } catch (e) {
+            console.log(e);
+            return res.status(500).send({ success: false, status: 'something went wrong' });
+        }
 
     }
     deleteCategory();
