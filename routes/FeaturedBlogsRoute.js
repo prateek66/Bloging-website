@@ -80,9 +80,9 @@ FeaturedBlogsRouter.post('/add_blog', (req, res, next) => {
                 }
 
                     if(hold.length >=3){
-                        hold.unshift({_id:newPost._id, thumbnail:thumbnail,title:title});
+                        hold.unshift({_id:_id, thumbnail:thumbnail,title:title});
                         hold.pop();
-                    } else  hold.unshift({_id:newPost._id, thumbnail:thumbnail,title:title});
+                    } else  hold.unshift({_id:_id, thumbnail:thumbnail,title:title});
 
              
                 let updateToDb = await featuredBlogsSchema.findByIdAndUpdate(fetchFeaturedBlogs[0]._id, { blogs: hold });

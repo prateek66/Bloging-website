@@ -6,7 +6,7 @@ const config = {
     
   
     // port
-    port: process.env.PORT || 3000,
+    port: process.env.PORT || 3005,
   
     // test environment
     test_env: 'test',
